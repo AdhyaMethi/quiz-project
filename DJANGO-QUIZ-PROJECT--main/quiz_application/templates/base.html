@@ -1,0 +1,98 @@
+<!-- Django ke static template tag library ko load kar rahe hain CSS/JS load karne ke liye -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Character encoding (UTF-8 har language support karta hai) -->
+    <meta charset="UTF-8">
+    <!-- Mobile responsiveness ke liye viewport meta tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Dynamic page title (child templates is block ko override karte hain) -->
+    <title>{% block title %}Quiz Master{% endblock %} | Interactive Quiz Application</title>
+    
+    <!-- Google Fonts Preconnect links performance optimize karte hain -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Modern Google Fonts: Inter (body text) aur Outfit (headings) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Main CSS Stylesheet (static folder se load ho raha hai) -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <!-- Child templates ko extra head tags inject karne ki suvidha -->
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Site Header & Sticky Navigation Bar -->
+    <header class="site-header">
+        <div class="nav-container">
+            <!-- Brand Logo with Home link -->
+            <a href="{% url 'home' %}" class="brand-logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Quiz<span class="highlight">Master</span></span>
+            </a>
+
+            <!-- Navigation Links Menu -->
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <!-- Home Page Link (Active class conditionally apply hoti hai) -->
+                    <li><a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
+                    <!-- Quizzes Catalog Link -->
+                    <li><a href="{% url 'quiz_list' %}" class="nav-link {% if request.resolver_match.url_name == 'quiz_list' or request.resolver_match.url_name == 'quiz_detail' %}active{% endif %}">Quizzes</a></li>
+                    <!-- Direct Link to Django Admin Dashboard (Opens in new tab) -->
+                    <li><a href="/admin/" target="_blank" class="nav-link admin-link" title="Open Teacher / Admin Dashboard">Admin Portal ↗</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Django Flash Messages (Alerts) Container -->
+    {% if messages %}
+    <div class="messages-container">
+        <!-- Har flash message par loop chalakar alert card bana rahe hain -->
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <span class="alert-icon">ℹ️</span>
+            <!-- Message text -->
+            <span class="alert-text">{{ message }}</span>
+            <!-- Alert ko band karne ka close button -->
+            <button class="alert-close" onclick="this.parentElement.remove();">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content Area: Har child page ka content yahan inject hoga -->
+    <main class="main-content">
+        {% block content %}
+        <!-- Child templates (home.html, quiz_list.html, etc.) apna code yahan dalenge -->
+        {% endblock %}
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <!-- Brand info in footer -->
+            <div class="footer-brand">
+                <span class="logo-icon">⚡</span>
+                <p>Interactive Quiz Application built with <strong>Django &amp; MySQL</strong>.</p>
+            </div>
+            <!-- Quick links in footer -->
+            <div class="footer-links">
+                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'quiz_list' %}">Quizzes</a>
+                <a href="/admin/">Django Admin</a>
+            </div>
+            <!-- Copyright text -->
+            <div class="footer-copyright">
+                <p>&copy; 2026 QuizMaster. Designed for learners and educators.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript File (Static folder se load ho raha hai) -->
+    <script src="{% static 'js/script.js' %}"></script>
+    <!-- Child templates ke custom JS ke liye extra block -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

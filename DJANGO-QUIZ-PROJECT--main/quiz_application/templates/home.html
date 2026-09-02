@@ -1,0 +1,96 @@
+<!-- Base layout template (Navbar, Footer, CSS) ko inherit kar rahe hain -->
+{% extends 'base.html' %}
+
+<!-- Landing page ka custom browser title -->
+{% block title %}Home - Welcome to QuizMaster{% endblock %}
+
+<!-- Main content block -->
+{% block content %}
+<!-- Hero Banner Section: Introductory header, action buttons aur live statistics -->
+<div class="hero-section">
+    <div class="hero-content">
+        <!-- Floating tag badge -->
+        <div class="badge hero-badge">🚀 Interactive Learning Platform</div>
+        
+        <!-- Main Application Title -->
+        <h1 class="hero-title">Quiz Application</h1>
+        
+        <!-- Short introductory subtitle -->
+        <p class="hero-subtitle">
+            Test your knowledge with our interactive quizzes. Challenge yourself across multiple topics, track your real-time score, and boost your understanding.
+        </p>
+        
+        <!-- Hero Action Buttons: Student quiz flow aur Admin dashboard link -->
+        <div class="hero-actions">
+            <!-- View Quizzes Button: Dynamic URL routing to 'quiz_list' -->
+            <a href="{% url 'quiz_list' %}" class="btn btn-primary btn-lg">
+                <span>View Quizzes</span>
+                <span class="btn-arrow">→</span>
+            </a>
+            <!-- Teacher / Admin Portal link (Opens in a new browser tab) -->
+            <a href="/admin/" target="_blank" class="btn btn-secondary btn-lg">
+                <span>Admin Portal</span>
+            </a>
+        </div>
+
+        <!-- Quick Stats Overview Grid: Live database counts from views.home context -->
+        <div class="stats-grid">
+            <!-- 1. Total Active Quizzes Count Box -->
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <!-- Database se aayi total_quizzes ki sankhya (default '0' if empty) -->
+                <div class="stat-value">{{ total_quizzes|default:"0" }}</div>
+                <div class="stat-label">Active Quizzes</div>
+            </div>
+
+            <!-- 2. Total Questions Count Box -->
+            <div class="stat-card">
+                <div class="stat-icon">❓</div>
+                <!-- Database se aayi total_questions ki sankhya -->
+                <div class="stat-value">{{ total_questions|default:"0" }}</div>
+                <div class="stat-label">Questions Ready</div>
+            </div>
+
+            <!-- 3. Feature Highlight Box -->
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-value">100%</div>
+                <div class="stat-label">Instant Evaluation</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works / Feature Steps Section -->
+<section class="features-section">
+    <div class="section-header">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">A seamless experience for both students taking quizzes and teachers managing content.</p>
+    </div>
+
+    <!-- 3-Step Feature Cards Grid -->
+    <div class="features-grid">
+        <!-- Step 1 Card -->
+        <div class="feature-card">
+            <div class="feature-number">01</div>
+            <h3>Pick a Quiz</h3>
+            <p>Browse through available topics like Python Basics, Django Fundamentals, and more.</p>
+        </div>
+
+        <!-- Step 2 Card -->
+        <div class="feature-card">
+            <div class="feature-number">02</div>
+            <h3>Answer Questions</h3>
+            <p>Review each question carefully and select one of the four multiple-choice options.</p>
+        </div>
+
+        <!-- Step 3 Card -->
+        <div class="feature-card">
+            <div class="feature-number">03</div>
+            <h3>Get Instant Scores</h3>
+            <p>Submit your quiz and see your total score, percentage, and performance analysis right away.</p>
+        </div>
+    </div>
+</section>
+<!-- Block content end -->
+{% endblock %}

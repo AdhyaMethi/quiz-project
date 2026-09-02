@@ -1,0 +1,156 @@
+<!-- Base layout template (Navbar, Footer, CSS) ko inherit kar rahe hain -->
+{% extends 'base.html' %}
+
+<!-- Page Title block mein dynamic quiz title set kar rahe hain -->
+{% block title %}{{ quiz.title }} - Quiz{% endblock %}
+
+<!-- Main content area shuru ho raha hai -->
+{% block content %}
+<div class="quiz-detail-wrapper">
+    <!-- Quiz Header Banner: Quiz ka title, description aur total questions dikhata hai -->
+    <div class="quiz-detail-header">
+        <div class="quiz-info">
+            <!-- Category badge -->
+            <span class="quiz-category-tag">🎯 Active Assessment</span>
+            <!-- Quiz ka Title -->
+            <h1 class="quiz-main-title">{{ quiz.title }}</h1>
+            <!-- Quiz ka Description -->
+            <p class="quiz-main-description">{{ quiz.description }}</p>
+        </div>
+        
+        <div class="quiz-meta-box">
+            <!-- Total Questions Count Badge -->
+            <div class="meta-item">
+                <span class="meta-label">Total Questions</span>
+                <!-- questions|length filter se total questions ki sankhya nikaali jaati hai -->
+                <span class="meta-value">{{ questions|length }}</span>
+            </div>
+            <!-- Live Stopwatch Timer Container (JavaScript dwara update hota hai) -->
+            <div class="meta-item timer-box" id="timerContainer">
+                <span class="meta-label">Quiz Timer</span>
+                <span class="meta-value" id="quizTimer">00:00</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Check kar rahe hain: Agar quiz mein questions hain tabhi form render karo -->
+    {% if has_questions %}
+    <!-- Quiz Form: Answers submit karne ke liye POST form (Action URL: submit_quiz view) -->
+    <form id="quizForm" method="POST" action="{% url 'submit_quiz' quiz.id %}" class="quiz-form">
+        <!-- Security ke liye CSRF token (Cross-Site Request Forgery se protection) -->
+        {% csrf_token %}
+
+        <div class="questions-list">
+            <!-- Django Template For Loop: Har question ko ek card ke roop mein render kar rahe hain -->
+            {% for question in questions %}
+            <div class="question-card" id="card_question_{{ question.id }}" data-question-id="{{ question.id }}">
+                <div class="question-header">
+                    <!-- forloop.counter current question number (1, 2, 3...) batata hai -->
+                    <span class="question-number">Question {{ forloop.counter }} of {{ questions|length }}</span>
+                </div>
+
+                <!-- Sawal ka actual prompt text -->
+                <div class="question-body">
+                    <p class="question-text">{{ question.question_text }}</p>
+                </div>
+
+                <!-- 4 Multiple Choice Radio Options Group -->
+                <div class="options-group">
+                    <!-- Option 1 Label & Radio Button -->
+                    <label class="option-label" for="q{{ question.id }}_opt1">
+                        <!-- name='question_{{ question.id }}' se har question ka alag radio group banta hai -->
+                        <input 
+                            type="radio" 
+                            id="q{{ question.id }}_opt1" 
+                            name="question_{{ question.id }}" 
+                            value="option1" 
+                            class="option-radio"
+                        >
+                        <!-- Custom CSS styled radio circle -->
+                        <span class="custom-radio"></span>
+                        <!-- Option Letter Badge (A) -->
+                        <span class="option-badge">A</span>
+                        <!-- Option 1 text from database -->
+                        <span class="option-text">{{ question.option1 }}</span>
+                    </label>
+
+                    <!-- Option 2 Label & Radio Button -->
+                    <label class="option-label" for="q{{ question.id }}_opt2">
+                        <input 
+                            type="radio" 
+                            id="q{{ question.id }}_opt2" 
+                            name="question_{{ question.id }}" 
+                            value="option2" 
+                            class="option-radio"
+                        >
+                        <span class="custom-radio"></span>
+                        <span class="option-badge">B</span>
+                        <!-- Option 2 text from database -->
+                        <span class="option-text">{{ question.option2 }}</span>
+                    </label>
+
+                    <!-- Option 3 Label & Radio Button -->
+                    <label class="option-label" for="q{{ question.id }}_opt3">
+                        <input 
+                            type="radio" 
+                            id="q{{ question.id }}_opt3" 
+                            name="question_{{ question.id }}" 
+                            value="option3" 
+                            class="option-radio"
+                        >
+                        <span class="custom-radio"></span>
+                        <span class="option-badge">C</span>
+                        <!-- Option 3 text from database -->
+                        <span class="option-text">{{ question.option3 }}</span>
+                    </label>
+
+                    <!-- Option 4 Label & Radio Button -->
+                    <label class="option-label" for="q{{ question.id }}_opt4">
+                        <input 
+                            type="radio" 
+                            id="q{{ question.id }}_opt4" 
+                            name="question_{{ question.id }}" 
+                            value="option4" 
+                            class="option-radio"
+                        >
+                        <span class="custom-radio"></span>
+                        <span class="option-badge">D</span>
+                        <!-- Option 4 text from database -->
+                        <span class="option-text">{{ question.option4 }}</span>
+                    </label>
+                </div>
+            </div>
+            <!-- For loop end -->
+            {% endfor %}
+        </div>
+
+        <!-- Sticky Bottom Action Bar (Cancel & Submit Buttons) -->
+        <div class="form-action-bar">
+            <!-- Cancel Button: Quizzes catalog par wapas jane ke liye confirmation ke sath -->
+            <a href="{% url 'quiz_list' %}" class="btn btn-outline" onclick="return confirm('Are you sure you want to leave this quiz? Your answers will not be saved.');">
+                Cancel &amp; Exit
+            </a>
+            <!-- Submit Quiz Button: POST form submit karega -->
+            <button type="submit" id="submitBtn" class="btn btn-primary btn-lg">
+                <span>Submit Quiz Answers</span>
+                <span class="btn-icon">✓</span>
+            </button>
+        </div>
+    </form>
+    {% else %}
+    <!-- Empty State: Agar quiz mein sawal nahi hain toh warning card dikhao -->
+    <div class="empty-state-card">
+        <div class="empty-icon">⚠️</div>
+        <h2>No Questions in this Quiz</h2>
+        <p>This quiz does not have any questions yet. Please add questions using the Django Admin panel.</p>
+        <div class="empty-actions">
+            <!-- Back to quizzes list button -->
+            <a href="{% url 'quiz_list' %}" class="btn btn-secondary">Back to Quizzes</a>
+            <!-- Open admin portal in new tab -->
+            <a href="/admin/" target="_blank" class="btn btn-primary">Add Questions via Admin</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<!-- Block content end -->
+{% endblock %}

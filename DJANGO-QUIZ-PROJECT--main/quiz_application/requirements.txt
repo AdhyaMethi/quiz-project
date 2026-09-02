@@ -1,0 +1,14 @@
+# ==============================================================================
+# REQUIREMENTS FOR DJANGO QUIZ APPLICATION
+# ==============================================================================
+# Core Django Web Framework
+Django>=4.2,<6.0
+
+# Pure Python MySQL Driver (recommended for beginner Windows setups without C++ compiler)
+pymysql>=1.1.0
+
+# Optional: Fast C-based MySQL Driver (requires Visual C++ build tools on Windows)
+# mysqlclient>=2.2.0
+
+# Optional: Environment variable management for passwords & keys
+python-dotenv>=1.0.0

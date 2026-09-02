@@ -1,0 +1,131 @@
+<!-- Base template ko inherit kar rahe hain -->
+{% extends 'base.html' %}
+
+<!-- Result page ka title set kar rahe hain -->
+{% block title %}Quiz Results - QuizMaster{% endblock %}
+
+<!-- Main content block -->
+{% block content %}
+<div class="result-wrapper">
+    <!-- Main Result Card Container -->
+    <div class="result-card">
+        <!-- Result Header: Performance badge, title, quiz name, aur motivational feedback message -->
+        <div class="result-header">
+            <!-- Performance Grade Badge (Jaise: Excellent / Good / Average / Needs Practice) -->
+            <div class="result-badge {{ feedback_class }}">{{ feedback_grade }}</div>
+            <!-- Main Result Heading -->
+            <h1 class="result-title">Quiz Completed!</h1>
+            <!-- Kis Quiz ka result hai -->
+            <p class="result-quiz-name">{{ result.quiz_title }}</p>
+            <!-- Views.py dwara banaya gaya personalized feedback message -->
+            <p class="result-feedback">{{ feedback_message }}</p>
+        </div>
+
+        <!-- Circular Score Ring & Percentage Display -->
+        <div class="score-circle-container">
+            <div class="score-circle">
+                <!-- Percentage (Jaise: 80.0%) -->
+                <span class="score-percent">{{ result.percentage }}%</span>
+                <!-- Score ratio: Kitne sahi out of total (Jaise: Score: 8 / 10) -->
+                <span class="score-ratio">Score: {{ result.score }} / {{ result.total_questions }}</span>
+            </div>
+        </div>
+
+        <!-- Detailed Metrics Grid: 4 alag-alag stats boxes -->
+        <div class="result-stats-grid">
+            <!-- 1. Total Questions Box -->
+            <div class="stat-box total-box">
+                <div class="stat-box-icon">📋</div>
+                <div class="stat-box-value">{{ result.total_questions }}</div>
+                <div class="stat-box-label">Total Questions</div>
+            </div>
+            
+            <!-- 2. Correct Answers Box (Green) -->
+            <div class="stat-box correct-box">
+                <div class="stat-box-icon">✅</div>
+                <div class="stat-box-value">{{ result.correct_answers }}</div>
+                <div class="stat-box-label">Correct Answers</div>
+            </div>
+
+            <!-- 3. Wrong Answers Box (Red) -->
+            <div class="stat-box wrong-box">
+                <div class="stat-box-icon">❌</div>
+                <div class="stat-box-value">{{ result.wrong_answers }}</div>
+                <div class="stat-box-label">Wrong Answers</div>
+            </div>
+
+            <!-- 4. Unanswered Box (Yellow/Orange) - Agar koi question chhuta ho tabhi dikhega -->
+            {% if result.unanswered > 0 %}
+            <div class="stat-box unanswered-box">
+                <div class="stat-box-icon">⚠️</div>
+                <div class="stat-box-value">{{ result.unanswered }}</div>
+                <div class="stat-box-label">Unanswered</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Question Breakdown Section: Baccho ko har sawal ka sahi/galat review dikhane ke liye -->
+        {% if result.breakdown %}
+        <div class="breakdown-section">
+            <h3 class="breakdown-title">Review Answers</h3>
+            <div class="breakdown-list">
+                <!-- Breakdown list par loop chala rahe hain -->
+                {% for item in result.breakdown %}
+                <!-- Agar answer sahi tha toh green border, galat tha toh red border -->
+                <div class="breakdown-item {% if item.is_correct %}breakdown-correct{% else %}breakdown-wrong{% endif %}">
+                    <div class="breakdown-header">
+                        <!-- Status indicator (Correct ya Incorrect) -->
+                        <span class="breakdown-status">
+                            {% if item.is_correct %}✓ Correct{% else %}✗ Incorrect{% endif %}
+                        </span>
+                        <!-- Question Number -->
+                        <span class="breakdown-qnum">Question {{ forloop.counter }}</span>
+                    </div>
+                    <!-- Sawal ka text -->
+                    <p class="breakdown-question-text">{{ item.question_text }}</p>
+                    <div class="breakdown-answers">
+                        <!-- Student dwara chuna gaya option -->
+                        <div class="answer-row">
+                            <span class="answer-label">Your Choice:</span>
+                            <span class="answer-value {% if item.is_correct %}text-success{% else %}text-danger{% endif %}">
+                                {{ item.selected_text }}
+                            </span>
+                        </div>
+                        <!-- Agar answer galat tha, toh sahi jawab bhi dikhayenge -->
+                        {% if not item.is_correct %}
+                        <div class="answer-row">
+                            <span class="answer-label">Correct Answer:</span>
+                            <span class="answer-value text-success font-bold">
+                                {{ item.correct_text }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- For loop end -->
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Navigation & Retry Action Buttons -->
+        <div class="result-actions">
+            <!-- Try Again Button: Usi quiz ko dobara attempt karne ke liye -->
+            {% if result.quiz_id %}
+            <a href="{% url 'quiz_detail' result.quiz_id %}" class="btn btn-primary">
+                <span>🔄 Try Again</span>
+            </a>
+            {% endif %}
+            <!-- Back to Quizzes Button: Saari quizzes ki list par jane ke liye -->
+            <a href="{% url 'quiz_list' %}" class="btn btn-secondary">
+                <span>📚 Back to Quizzes</span>
+            </a>
+            <!-- Home Button: Landing page par wapas jane ke liye -->
+            <a href="{% url 'home' %}" class="btn btn-outline">
+                <span>🏠 Home</span>
+            </a>
+        </div>
+    </div>
+</div>
+<!-- Block content end -->
+{% endblock %}

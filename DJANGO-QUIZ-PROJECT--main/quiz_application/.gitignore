@@ -1,0 +1,19 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+env/
+
+# Environment Variables & Secrets
+.env
+
+# Database (Uncomment if you don't want to upload DB to GitHub)
+# *.sqlite3
+# db.sqlite3
+
+# IDE
+.vscode/
+.idea/

@@ -1,0 +1,81 @@
+<!-- Base template layout ko inherit kar rahe hain -->
+{% extends 'base.html' %}
+
+<!-- Page Title block -->
+{% block title %}Available Quizzes{% endblock %}
+
+<!-- Main content block -->
+{% block content %}
+<div class="page-container">
+    <!-- Page Header: Title aur Home page par wapas jane ka button -->
+    <div class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">Available Quizzes</h1>
+            <p class="page-subtitle">Choose a topic below and test your knowledge. All quizzes are evaluated instantly.</p>
+        </div>
+        <!-- Back to Home navigation button -->
+        <div class="header-action">
+            <a href="{% url 'home' %}" class="btn btn-outline">← Back to Home</a>
+        </div>
+    </div>
+
+    <!-- Check kar rahe hain: Database mein active quizzes hain ya nahi -->
+    {% if quizzes %}
+    <!-- Quizzes Grid Layout -->
+    <div class="quiz-grid">
+        <!-- Har ek Quiz object par loop chalakar card render kar rahe hain -->
+        {% for quiz in quizzes %}
+        <div class="quiz-card">
+            <!-- Card Header: Quiz number badge aur Total Questions count -->
+            <div class="quiz-card-header">
+                <!-- Quiz index number (Quiz #1, Quiz #2...) -->
+                <span class="quiz-badge">Quiz #{{ forloop.counter }}</span>
+                <!-- Total questions count tag using model property -->
+                <span class="question-count-tag">
+                    <span class="icon">📝</span> {{ quiz.total_questions }} Questions
+                </span>
+            </div>
+            
+            <!-- Quiz Title -->
+            <h2 class="quiz-title">{{ quiz.title }}</h2>
+            <!-- Quiz Description with line breaks filter -->
+            <p class="quiz-desc">{{ quiz.description|linebreaksbr }}</p>
+            
+            <!-- Card Footer: Creation date aur Start Quiz button -->
+            <div class="quiz-card-footer">
+                <!-- Date formatting filter: 'M d, Y' (e.g. Aug 25, 2026) -->
+                <span class="quiz-date">Added: {{ quiz.created_at|date:"M d, Y" }}</span>
+                <!-- Agar quiz mein 1 ya zyada questions hain toh Start button active rahega -->
+                {% if quiz.total_questions > 0 %}
+                    <!-- Dynamic URL routing to quiz_detail view with quiz.id parameter -->
+                    <a href="{% url 'quiz_detail' quiz.id %}" class="btn btn-primary btn-block">
+                        <span>Start Quiz</span>
+                        <span class="btn-arrow">→</span>
+                    </a>
+                {% else %}
+                    <!-- Agar questions nahi hain toh disabled button dikhayenge -->
+                    <button class="btn btn-disabled btn-block" disabled title="No questions available in this quiz yet">
+                        Coming Soon
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+        <!-- For loop end -->
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State: Agar database mein koi bhi active quiz nahi hai -->
+    <div class="empty-state-card">
+        <div class="empty-icon">📭</div>
+        <h2>No Quizzes Available Yet</h2>
+        <p>No active quizzes were found in the database. As a teacher or administrator, you can add quizzes through the Django Admin panel.</p>
+        <div class="empty-actions">
+            <!-- Direct link to Django admin portal -->
+            <a href="/admin/" target="_blank" class="btn btn-primary">Go to Django Admin</a>
+            <a href="{% url 'home' %}" class="btn btn-secondary">Return Home</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<!-- Block content end -->
+{% endblock %}
